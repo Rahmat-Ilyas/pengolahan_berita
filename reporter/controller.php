@@ -19,6 +19,14 @@ if (isset($_POST['req'])) {
 
 		if ($get) echo json_encode(true);
 		else echo json_encode(false);
+	} else if($_POST['req'] == 'cek_username_update') {
+		$username = $_POST['username'];
+		$this_username = $_POST['this_username'];
+		$result = mysqli_query($conn, "SELECT * FROM tb_users WHERE username = '$username' AND username != '$this_username'");
+		$get = mysqli_fetch_assoc($result);
+
+		if ($get) echo json_encode(true);
+		else echo json_encode(false);
 	}
 }
 
@@ -82,10 +90,87 @@ if (isset($_POST['submit_berita'])) {
 			$(document).ready(function() {
 				swal({
 					title: 'Berhasil Dibuat',
-					text: 'Naskah/berit baru berhasil di tambah',
+					text: 'Naskah/berit baru berhasil di tambah, tunggu proses koreksi',
 					icon: 'success'
 				}).then((data) => {
 					location.href = 'naskah_dibuat.php';
+				});
+			});
+		</script>
+	<?php }
+}
+
+// REVISI BERITA
+if (isset($_POST['submit_revisi_berita'])) {
+	$id = $_POST['id'];
+	$judul = $_POST['judul'];
+	$kategori = $_POST['kategori'];
+	$berita_revisi = $_POST['berita_revisi'];
+	
+	$berita = "UPDATE tb_berita SET judul = '$judul', kategori = '$kategori', status = 'revisi' WHERE id = '$id'";
+	mysqli_query($conn, $berita);
+
+	$revisi = "UPDATE tb_revisi SET berita_revisi = '$berita_revisi' WHERE berita_id = '$id'";
+	mysqli_query($conn, $revisi);
+
+	if (mysqli_affected_rows($conn) > 0) { 
+		plugins(); ?>
+		<script>
+			$(document).ready(function() {
+				swal({
+					title: 'Berhasil Direvisi',
+					text: 'Naskah/berit berhasil direvisi, tunggu proses koreksi kembali',
+					icon: 'success'
+				}).then((data) => {
+					location.href = 'naskah_koreksi.php';
+				});
+			});
+		</script>
+	<?php }
+}
+
+// UPDATE PROFILE 
+if (isset($_POST['edit_profile'])) {
+	$id = $_POST['id'];
+	$nama = $_POST['nama'];
+	$alamat = $_POST['alamat'];
+	$no_hp = $_POST['no_hp'];
+	$username = $_POST['username'];
+
+    // SET FOTO 
+	if ($_FILES['foto']['name'] != '') {
+		$foto = $_FILES['foto']['name'];
+		$ext = pathinfo($foto, PATHINFO_EXTENSION);
+		$nama_foto = "image_".time().".".$ext;
+		$file_tmp = $_FILES['foto']['tmp_name'];
+		// HAPUS OLD FOTO
+		$target = "../assets/img/avatar/".$_POST['foto_now'];
+		if (file_exists($target) && $_POST['foto_now'] != 'default.png') unlink($target);
+		// UPLOAD NEW FOTO
+		move_uploaded_file($file_tmp, '../assets/img/avatar/'.$nama_foto);
+	} else {
+		$nama_foto = $_POST['foto_now'];
+	}
+
+	if ($_POST['password'] != '') {
+		$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+		$query = "UPDATE tb_users SET nama = '$nama', alamat = '$alamat', no_hp = '$no_hp', foto = '$nama_foto', username = '$username', password = '$password' WHERE id = '$id'";
+	} else {
+		$query = "UPDATE tb_users SET nama = '$nama', alamat = '$alamat', no_hp = '$no_hp', foto = '$nama_foto', username = '$username' WHERE id = '$id'";
+	}
+
+	// EDIT PROFILE
+	mysqli_query($conn, $query);
+	if (mysqli_affected_rows($conn) > 0) {
+		plugins(); ?>
+		<script>
+			$(document).ready(function() {
+				swal({
+					title: 'Berhasil Diupdate',
+					text: 'Data profile berhasil diupdate',
+					icon: 'success'
+				}).then((data) => {
+					location.href = 'profile.php';
 				});
 			});
 		</script>

@@ -16,6 +16,34 @@ $id = $get['id'];
 $getNaskah_baru = mysqli_query($conn, "SELECT * FROM tb_berita WHERE status = 'waiting'");
 $naskah_baru = mysqli_num_rows($getNaskah_baru);
 
+// CEK NASKAH REVISI 
+$revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'");
+$naskah_revisi = 0;
+foreach ($revisi as $rev) {
+  $berita_id = $rev['berita_id'];
+  $berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE id = '$berita_id' AND (status = 'correction' OR status = 'revisi')");
+  $dta = mysqli_fetch_assoc($berita);
+  if ($dta) $naskah_revisi = $naskah_revisi + 1;
+}
+
+// CEK NASKAH VERIFY 
+$naskah_verify = 0;
+foreach ($revisi as $rev) {
+  $berita_id = $rev['berita_id'];
+  $berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE id = '$berita_id' AND (status = 'verify')");
+  $dta = mysqli_fetch_assoc($berita);
+  if ($dta) $naskah_verify = $naskah_verify + 1;
+}
+
+// CEK NASKAH REFUSE 
+$naskah_refuse = 0;
+foreach ($revisi as $rev) {
+  $berita_id = $rev['berita_id'];
+  $berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE id = '$berita_id' AND (status = 'refuse')");
+  $dta = mysqli_fetch_assoc($berita);
+  if ($dta) $naskah_refuse = $naskah_refuse + 1;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -75,11 +103,11 @@ $naskah_baru = mysqli_num_rows($getNaskah_baru);
               <img alt="image" src="../assets/img/avatar/<?= $foto ?>" class="rounded-circle mr-1">
               <div class="d-sm-none d-lg-inline-block"><?= $nama ?></div></a>
               <div class="dropdown-menu dropdown-menu-right">
-                <a href="features-profile.html" class="dropdown-item has-icon">
+                <a href="profile.php" class="dropdown-item has-icon">
                   <i class="far fa-user"></i> Profile
                 </a>
                 <div class="dropdown-divider"></div>
-                <a href="../config.php?logout=true&for=login_reporter" class="dropdown-item has-icon text-danger">
+                <a href="../config.php?logout=true&for=login_editor" class="dropdown-item has-icon text-danger">
                   <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
               </div>
@@ -108,7 +136,7 @@ $naskah_baru = mysqli_num_rows($getNaskah_baru);
               <li id="dashboard"><a class="nav-link" href="index.php"><i class="fa fa-desktop"></i> <span>Dashboard</span></a></li>   
               <li class="dropdown" id="kelola_naskah">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                  <?php if ($naskah_baru >= 1) { ?>
+                  <?php if ($naskah_baru >= 1 || $naskah_revisi >= 1) { ?>
                     <span class="beep" style="width: 40px;">
                       <i class="fa fa-newspaper" style="margin-left: -2px;"></i>
                     </span>
@@ -125,22 +153,47 @@ $naskah_baru = mysqli_num_rows($getNaskah_baru);
                       <?php } ?>
                     </a>
                   </li>
-                  <li id="naskah_dibuat"><a class="nav-link" href="naskah_dibuat.php">Naskah Dikoreksi</a></li>
-                </ul>
-              </li>
-              <li class="dropdown" id="revisi_naskah">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa fa-columns"></i> <span>Revisi Naskah</span></a>
-                <ul class="dropdown-menu">
-                  <li id="naskah_direvisi"><a class="nav-link" href="thiss">Naskah Direvisi</a></li>
-                  <li id="selesai_direvisi"><a class="nav-link" href="thiss">Selesai Direvisi</a></li>
+                  <li id="naskah_dikoreksi">
+                    <a class="nav-link" href="naskah_dikoreksi.php">Naskah Dikoreksi
+                      <?php if ($naskah_revisi >= 1) { ?>
+                        <span class="badge badge-danger text-center mb-3" style="width: 14px; padding: 2px; font-size: 10px;"><b><?= $naskah_revisi ?></b></span>
+                      <?php } ?>
+                    </a>
+                  </li>
                 </ul>
               </li>
               <li class="dropdown" id="data_naskah">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa fa-file"></i> <span>Data Naskah</span></a>
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                  <?php if ($naskah_verify >= 1 || $naskah_refuse >= 1) { ?>
+                    <span class="beep" style="width: 40px;">
+                      <i class="fa fa-file-alt" style="margin-left: -2px;"></i>
+                    </span>
+                  <?php } else { ?>
+                    <i class="fa fa-file-alt"></i>
+                  <?php } ?>
+                  <span>Data Naskah</span>
+                </a>
                 <ul class="dropdown-menu">
-                  <li id="naskah_disetujui"><a class="nav-link" href="thiss">Naskah Disetujui</a></li>
-                  <li id="naskah_ditolak"><a class="nav-link" href="thiss">Naskah Ditolak</a></li>
-                  <li id="arsip_naskah"><a class="nav-link" href="thiss">Arsip Naskah</a></li>
+                  <li id="menunggu_disetujui">
+                    <a class="nav-link" href="menunggu_disetujui.php">Menunggu Disetujui</a>
+                  </li>
+                  <li id="naskah_disetujui">
+                    <a class="nav-link" href="naskah_disetujui.php">Naskah Disetujui
+                      <?php if ($naskah_verify >= 1) { ?>
+                        <span class="badge badge-danger text-center mb-3" style="width: 14px; padding: 2px; font-size: 10px;"><b><?= $naskah_verify ?></b></span>
+                      <?php } ?>
+                    </a>
+                  </li>
+                  <li id="naskah_ditolak">
+                    <a class="nav-link" href="naskah_ditolak.php">Naskah Ditolak
+                      <?php if ($naskah_refuse >= 1) { ?>
+                        <span class="badge badge-danger text-center mb-3" style="width: 14px; padding: 2px; font-size: 10px;"><b><?= $naskah_refuse ?></b></span>
+                      <?php } ?>
+                    </a>
+                  </li>
+                  <li id="arsip_naskah">
+                    <a class="nav-link" href="arsip_naskah.php">Arsip Naskah</a>
+                  </li>
                 </ul>
               </li>
             </aside>

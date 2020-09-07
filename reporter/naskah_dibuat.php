@@ -1,7 +1,7 @@
 <?php 
 require('template/header.php');
 
-$berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE status != 'finish' AND user_id = '$id'");
+$berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE user_id = '$id' AND (status != 'finish' AND status != 'verify_' AND status != 'refuse_')");
 ?>
 <!-- Main Content -->
 <div class="main-content">
@@ -36,22 +36,24 @@ $berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE status != 'finish' 
                   <tbody>
                     <?php $i = 1; foreach($berita as $dta) { 
                       if ($dta['status'] == 'waiting') {
-                          $caption = 'Diproses';
-                          $color = 'badge-info';
-                       } 
-                       else if ($dta['status'] == 'revisi') {
-                          $caption = 'Direvisi';
-                          $color = 'badge-warning'; 
-                       } else if ($dta['status'] == 'done') {
-                          $caption = 'Ditinjau';
-                          $color = 'badge-secondary'; 
-                       } else if ($dta['status'] == 'verify') {
-                          $caption = 'Disetujui';
-                          $color = 'badge-success'; 
-                       } else if ($dta['status'] == 'refuse') {
-                          $caption = 'Ditolak';
-                          $color = 'badge-danger'; 
-                       } ?>                                 
+                        $caption = 'Diproses';
+                        $color = 'badge-info';
+                      } else if ($dta['status'] == 'correction') {
+                        $caption = 'Dikoreksi';
+                        $color = 'badge-warning'; 
+                      } else if ($dta['status'] == 'revisi') {
+                        $caption = 'Direvisi';
+                        $color = 'badge-warning'; 
+                      } else if ($dta['status'] == 'done') {
+                        $caption = 'Ditinjau';
+                        $color = 'badge-secondary'; 
+                      } else if ($dta['status'] == 'verify') {
+                        $caption = 'Disetujui';
+                        $color = 'badge-success'; 
+                      } else if ($dta['status'] == 'refuse') {
+                        $caption = 'Ditolak';
+                        $color = 'badge-danger'; 
+                      } ?>                                 
                       <tr>
                         <td><?= $i ?></td>
                         <td><?= $dta['judul'] ?></td>

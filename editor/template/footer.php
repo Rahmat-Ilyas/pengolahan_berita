@@ -37,16 +37,37 @@
 <!-- Page Specific JS File -->
 <script src="../assets/js/page/index.js"></script>
 <script src="../assets/js/page/modules-datatables.js"></script>
+<script src="../assets/modules/sweetalert/sweetalert.min.js"></script>
 
 <!-- Template JS File -->
 <script src="../assets/js/scripts.js"></script>
 <script src="../assets/js/custom.js"></script>
+<script src="../assets/js/jquery.PrintArea.js"></script>
 
 <script type="text/javascript">
   $(document).ready(function() {
     FroalaEditor('#editor', {
       height: 480
     });
+
+    $(document).on('click', '#set_print', function(e) {
+      e.preventDefault();
+      var id = $(this).attr('data-id');
+      var editor_id = "<?= $id ?>";
+      $.ajax({
+        url     : 'controller.php',
+        method  : "POST",
+        data    : { req: 'set_print', berita_id: id, editor_id: editor_id },
+        success : function(data) {
+          $.each(data, function(key, val) {
+            $('#'+key).text(val);
+            if (key == 'isi_berita') $('#isi_berita').html(val);
+          });
+
+          $('.print').printArea();
+        }
+      });
+    });    
   });
 </script>
 </body>

@@ -1,7 +1,7 @@
 <?php 
 require('../config.php');
 
-if (!isset($_SESSION['login_reporter'])) {
+if (!isset($_SESSION['login_kabid'])) {
   header("location: ../login.php");
 }
 
@@ -12,9 +12,17 @@ $nama = $get['nama'];
 $foto = $get['foto'];
 $id = $get['id'];
 
-// CEK NASKAH KOREKSI 
-$getNaskah_koreksi = mysqli_query($conn, "SELECT * FROM tb_berita WHERE user_id = '$id' AND (status = 'correction' OR status = 'revisi')");
-$naskah_koreksi = mysqli_num_rows($getNaskah_koreksi);
+// CEK NASKAH BARU 
+$get_proses = mysqli_query($conn, "SELECT * FROM tb_berita WHERE status = 'done'");
+$menunggu_diproses = mysqli_num_rows($get_proses);
+
+// CEK USER BARU 
+$get_user_verify = mysqli_query($conn, "SELECT * FROM tb_users WHERE status = 'waiting'");
+$user_verify = mysqli_num_rows($get_user_verify);
+
+$user = mysqli_query($conn, "SELECT * FROM tb_users WHERE id = '$id'");
+$dta = mysqli_fetch_assoc($user);
+
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +30,7 @@ $naskah_koreksi = mysqli_num_rows($getNaskah_koreksi);
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>Halaman Reporter- TV Syiar</title>
+  <title>Halaman Kepala Bidang- TV Syiar</title>
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="../assets/modules/bootstrap/css/bootstrap.min.css">
@@ -74,11 +82,11 @@ $naskah_koreksi = mysqli_num_rows($getNaskah_koreksi);
               <img alt="image" src="../assets/img/avatar/<?= $foto ?>" class="rounded-circle mr-1">
               <div class="d-sm-none d-lg-inline-block"><?= $nama ?></div></a>
               <div class="dropdown-menu dropdown-menu-right">
-                <a href="profile.php" class="dropdown-item has-icon">
+                <a href="#" class="dropdown-item has-icon" data-toggle="modal" data-target="#modal-edit">
                   <i class="far fa-user"></i> Profile
                 </a>
                 <div class="dropdown-divider"></div>
-                <a href="../config.php?logout=true&for=login_reporter" class="dropdown-item has-icon text-danger">
+                <a href="../config.php?logout=true&for=login_kabid" class="dropdown-item has-icon text-danger">
                   <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
               </div>
@@ -94,7 +102,7 @@ $naskah_koreksi = mysqli_num_rows($getNaskah_koreksi);
               <div class="text-left pl-3">
                 <hr style="margin-bottom: -5px;">
                 <b style="font-size: 15px;"><?= $nama ?></b>
-                <p style="margin-bottom: -10px; margin-top: -20px;">Reporter</p>
+                <p style="margin-bottom: -10px; margin-top: -20px;">Kepala Bidang</p>
                 <hr>
               </div>
             </div>
@@ -105,41 +113,54 @@ $naskah_koreksi = mysqli_num_rows($getNaskah_koreksi);
             <ul class="sidebar-menu mt-3">
               <li class="menu-header">Menu Utama</li>
               <li id="dashboard"><a class="nav-link" href="index.php"><i class="fa fa-desktop"></i> <span>Dashboard</span></a></li>   
-              <li class="dropdown" id="kelola_naskah">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa fa-newspaper"></i> <span>Kelola Naskah</span></a>
-                <ul class="dropdown-menu">
-                  <li id="tambah_naskah"><a class="nav-link" href="tambah_naskah.php">Tambah Naskah</a></li>
-                  <li id="naskah_dibuat"><a class="nav-link" href="naskah_dibuat.php">Naskah Baru Dibuat</a></li>
-                </ul>
-              </li>
-              <li class="dropdown" id="revisi_naskah">
+              <li class="dropdown" id="proses_naskah">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                  <?php if ($naskah_koreksi >= 1) { ?>
+                  <?php if ($menunggu_diproses >= 1) { ?>
                     <span class="beep" style="width: 40px;">
-                      <i class="fa fa-columns" style="margin-left: -2px;"></i>
+                      <i class="fa fa-newspaper" style="margin-left: -2px;"></i>
                     </span>
                   <?php } else { ?>
-                    <i class="fa fa-columns"></i>
+                    <i class="fa fa-newspaper"></i>
                   <?php } ?>
-                  <span>Revisi Naskah</span>
+                  <span>Proses Naskah</span>
                 </a>
                 <ul class="dropdown-menu">
-                  <li id="naskah_koreksi">
-                    <a class="nav-link" href="naskah_koreksi.php">Dikoreksi/Direvisi
-                      <?php if ($naskah_koreksi >= 1) { ?>
-                        <span class="badge badge-danger text-center mb-3" style="width: 14px; padding: 2px; font-size: 10px;"><b><?= $naskah_koreksi ?></b></span>
+                  <li id="menunggu_diproses">
+                    <a class="nav-link" href="menunggu_diproses.php">Menunggu Diproses 
+                      <?php if ($menunggu_diproses >= 1) { ?>
+                        <span class="badge badge-danger text-center mb-3" style="width: 14px; padding: 2px; font-size: 10px;"><b><?= $menunggu_diproses ?></b></span>
                       <?php } ?>
                     </a>
                   </li>
-                  <li id="selesai_direvisi"><a class="nav-link" href="selesai_direvisi.php">Selesai Direvisi</a></li>
+                  <li id="selesai_diproses">
+                    <a class="nav-link" href="selesai_diproses.php">Selesai Diproses</a>
+                  </li>
                 </ul>
               </li>
-              <li class="dropdown" id="data_naskah">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa fa-file-alt"></i> <span>Data Naskah</span></a>
+              <li class="dropdown" id="repoter_editor">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                  <?php if ($user_verify >= 1) { ?>
+                    <span class="beep" style="width: 40px;">
+                      <i class="fa fa-users" style="margin-left: -2px;"></i>
+                    </span>
+                  <?php } else { ?>
+                    <i class="fa fa-users"></i>
+                  <?php } ?>
+                  <span>Reporter & Editor</span>
+                </a>
                 <ul class="dropdown-menu">
-                  <li id="naskah_disetujui"><a class="nav-link" href="naskah_disetujui.php">Naskah Disetujui</a></li>
-                  <li id="naskah_ditolak"><a class="nav-link" href="naskah_ditolak.php">Naskah Ditolak</a></li>
+                  <li id="data_reporter">
+                    <a class="nav-link" href="data_reporter.php">Data Reporter
+                      <?php if ($user_verify >= 1) { ?>
+                        <span class="badge badge-danger text-center mb-3" style="width: 14px; padding: 2px; font-size: 10px;"><b><?= $user_verify ?></b></span>
+                      <?php } ?>
+                    </a>
+                  </li>
+                  <li id="data_editor">
+                    <a class="nav-link" href="data_editor.php">Data Editor</a>
+                  </li>
                 </ul>
               </li>
+              <li id="kategori_berita"><a class="nav-link" href="kategori_berita.php"><i class="fa fa-list"></i> <span>Kategori Berita</span></a></li>   
             </aside>
           </div>

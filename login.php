@@ -5,9 +5,6 @@ if (isset($_COOKIE['login_reporter'])) $_SESSION['login_reporter'] = $_COOKIE['l
 else if (isset($_COOKIE['login_editor'])) $_SESSION['login_editor'] = $_COOKIE['login_editor'];
 else if (isset($_COOKIE['login_kabid'])) $_SESSION['login_kabid'] = $_COOKIE['login_kabid'];
 
-// var_dump($_COOKIE);
-// exit();
-
 if (isset($_COOKIE['get_id'])) $_SESSION['get_id'] = $_COOKIE['get_id'];
 
 if (isset($_SESSION['login_reporter'])) header("location: reporter/");
@@ -48,12 +45,15 @@ if (isset($_POST['login'])) {
           exit();
         }
       } else if ($jabatan == 'editor') {
-        $_SESSION['login_editor'] = $get_password;
-        if (isset($_POST['remember'])) {
-          setcookie('login_editor', $get_password, time()+172800);
+        if ($status != 'active') $err_stss = true;
+        else {
+          $_SESSION['login_editor'] = $get_password;
+          if (isset($_POST['remember'])) {
+            setcookie('login_editor', $get_password, time()+172800);
+          }
+          header("location: editor/");
+          exit();
         }
-        header("location: editor/");
-        exit();
       } else if ($jabatan == 'kabid') {
         $_SESSION['login_kabid'] = $get_password;
         if (isset($_POST['remember'])) {
@@ -138,7 +138,7 @@ if (isset($_POST['login'])) {
 
                     <?php if ($err_stss == true) { ?>
                       <div class="text-danger">
-                        Akun belum diverifikasi
+                        Akun belum diverifikasi atau sedang dinonaktifkan
                       </div>
                     <?php } ?>
                   </div>

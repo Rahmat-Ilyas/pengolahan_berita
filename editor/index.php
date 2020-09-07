@@ -1,5 +1,27 @@
 <?php
 require('template/header.php');
+
+// CEK NASKAH BARU 
+$getNaskah_new = mysqli_query($conn, "SELECT * FROM tb_berita WHERE status = 'waiting'");
+$naskah_new = mysqli_num_rows($getNaskah_new);
+
+// CEK NASKAH DONE 
+$naskah_done = 0;
+foreach ($revisi as $rev) {
+  $berita_id = $rev['berita_id'];
+  $berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE id = '$berita_id' AND (status = 'done')");
+  $dta = mysqli_fetch_assoc($berita);
+  if ($dta) $naskah_done = $naskah_done + 1;
+}
+
+// CEK NASKAH VERIFY ALL
+$naskah_verify_all = 0;
+foreach ($revisi as $rev) {
+  $berita_id = $rev['berita_id'];
+  $berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE id = '$berita_id' AND (status = 'verify' OR status = 'verify_')");
+  $dta = mysqli_fetch_assoc($berita);
+  if ($dta) $naskah_verify_all = $naskah_verify_all + 1;
+}
 ?>
 <!-- Main Content -->
 <div class="main-content">
@@ -18,7 +40,7 @@ require('template/header.php');
               <h4>Naskah Baru Mausk</h4>
             </div>
             <div class="card-body">
-              10
+              <?= $naskah_new ?>
             </div>
           </div>
         </div>
@@ -33,7 +55,7 @@ require('template/header.php');
               <h4>Naskah Koreksi</h4>
             </div>
             <div class="card-body">
-              1
+              <?= $naskah_revisi ?>
             </div>
           </div>
         </div>
@@ -48,7 +70,7 @@ require('template/header.php');
               <h4>Menunggu Persetujuan</h4>
             </div>
             <div class="card-body">
-              2
+              <?= $naskah_done ?>
             </div>
           </div>
         </div>
@@ -63,7 +85,7 @@ require('template/header.php');
               <h4>Naskah Disetujui</h4>
             </div>
             <div class="card-body">
-              0
+              <?= $naskah_verify_all ?>
             </div>
           </div>
         </div>
@@ -77,7 +99,7 @@ require('template/header.php');
               <h2>Selamat Datang <?= $nama ?></h2>
               <p class="lead">Selamat datang di Halaman Editor. Semoga harimu menyenagkan.</p>
               <div class="mt-4">
-                <a href="#" class="btn btn-outline-white btn-lg btn-icon icon-left"><i class="far fa-user"></i> Setup Account</a>
+                <a href="profile.php" class="btn btn-outline-white btn-lg btn-icon icon-left"><i class="far fa-user"></i> Setup Account</a>
               </div>
             </div>
           </div>

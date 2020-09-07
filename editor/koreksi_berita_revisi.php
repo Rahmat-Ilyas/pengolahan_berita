@@ -5,6 +5,10 @@ $berita_id = $_GET['berita_id'];
 $result = mysqli_query($conn, "SELECT * FROM tb_berita WHERE id = '$berita_id'");
 $dta = mysqli_fetch_assoc($result);
 
+$result1 = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE berita_id = '$berita_id'");
+$rev = mysqli_fetch_assoc($result1);
+$rev_id = $rev['id'];
+
 ?>
 <!-- Main Content -->
 <form method="POST" action="controller.php" enctype="multipart/form-data">
@@ -24,15 +28,15 @@ $dta = mysqli_fetch_assoc($result);
               <div class="card-body">
                 <a href="#" role="button" class="btn btn-info mb-3" data-toggle="modal" data-target="#modal-catatan"><i class="fa fa-edit"></i>&nbsp;&nbsp;Tambah Catatan</a>
                 <div class="form-group">
+                  <input type="hidden" name="rev_id" value="<?= $rev_id ?>">
                   <input type="hidden" name="berita_id" value="<?= $berita_id ?>">
-                  <input type="hidden" name="editor_id" value="<?= $id ?>">
-                  <input type="hidden" name="koreksi_berita" value="true">
-                  <textarea name="berita_revisi" id="editor" required=""><?= $dta['berita_created'] ?></textarea>
+                  <input type="hidden" name="koreksi_berita_revisi" value="true">
+                  <textarea name="berita_revisi" id="editor" required=""><?= $rev['berita_revisi'] ?></textarea>
                 </div>
               </div>
               <div class="card-footer" style="margin-top: -50px;">
                 <button type="button" class="btn btn-primary btn-lg" id="korksi"><i class="fa fa-save"></i>&nbsp;&nbsp;Koreksi Naskah</button>
-                <a href="naskah_baru.php" role="button"class="btn btn-danger btn-lg"><i class="fa fa-times"></i>&nbsp;&nbsp;Batal</a>
+                <a href="naskah_dikoreksi.php" role="button"class="btn btn-danger btn-lg"><i class="fa fa-times"></i>&nbsp;&nbsp;Batal</a>
               </div>
             </div>
           </div>
@@ -52,11 +56,12 @@ $dta = mysqli_fetch_assoc($result);
           </button>
         </div>
         <div class="modal-body">
-          <textarea id="catatat" name="catatan_editor"></textarea>
+          <textarea id="catatat" name="catatan_editor"><?= $rev['catatan_editor'] ?></textarea>
         </div>
         <div class="modal-footer bg-whitesmoke" style="margin-top: -30px;">
           <button type="button" id="tambah" class="btn btn-primary">Tambahkan Catatan</button>
-          <button type="button" id="batal" class="btn btn-danger" data-dismiss="modal">Batal / Hapus Catatan</button>
+          <button type="button" id="batal" class="btn btn-danger" data-dismiss="modal">Hapus Catatan</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
         </div>
       </div>
     </div>
@@ -108,7 +113,7 @@ $dta = mysqli_fetch_assoc($result);
 <script>
   $(document).ready(function() {
     $('#kelola_naskah').addClass('active');
-    $('#naskah_baru').addClass('active');
+    $('#naskah_dikoreksi').addClass('active');
 
     FroalaEditor('#catatat', {
       toolbarButtons: {

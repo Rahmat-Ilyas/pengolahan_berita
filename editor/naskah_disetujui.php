@@ -67,7 +67,7 @@ $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'")
               <div class="container print" hidden="" style="font-size: 20px">
                 <div class="row">
                   <div class="col-md-2" style="width: 15%;">
-                    <img src="../assets/img/logo.png" alt="" height="100">
+                    <img src="../assets/img/logo.png" alt="Logo TV Syiar" height="100">
                   </div>
                   <div class="col-md-8" style="width: 70%;">
                     <h4 id="judul" class="mb-3"></h4>
@@ -83,7 +83,7 @@ $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'")
                     </div>
                   </div>
                   <div class="col-md-2" style="width: 15%;">
-                    <img src="../assets/img/uin.png" alt="" height="120">
+                    <img src="../assets/img/uin.png" alt="Logo UIN" height="120">
                   </div>
                 </div>
                 <hr>

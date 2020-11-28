@@ -1,7 +1,7 @@
 <?php 
 date_default_timezone_set("Asia/Makassar");
 session_start();
-$conn = mysqli_connect("localhost", "rahmat_ryu", "14021998", "db_berita");
+$conn = mysqli_connect("localhost", "root", "", "db_berita");
 
 if (isset($_GET['logout'])) {
 	$for = $_GET['for'];

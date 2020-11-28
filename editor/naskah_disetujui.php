@@ -1,4 +1,4 @@
-<?php 
+<?php
 require('template/header.php');
 
 $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'");
@@ -20,18 +20,18 @@ $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'")
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-striped" id="table-1">
-                  <thead>                                 
+                  <thead>
                     <tr>
                       <th style="max-width: 200px;">Judul Berita</th>
                       <th>Reporter</th>
                       <th>Kategori</th>
                       <th>Tanggal Dibuat</th>
                       <th>Hasil Akhir Berita</th>
-                      <th>Aksi</th>
+                      <th style="width: 120px;">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <?php foreach($revisi as $rev) {
+                    <?php foreach ($revisi as $rev) {
                       $berita_id = $rev['berita_id'];
                       $berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE id = '$berita_id' AND status = 'verify'");
                       $dta = mysqli_fetch_assoc($berita);
@@ -57,23 +57,33 @@ $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'")
                             <a href="controller.php?arsip=true&from=naskah_disetujui&berita_id=<?= $dta['id'] ?>" class="btn btn-icon icon-left btn-warning btn-sm" data-toggle1="tooltip" title="" data-original-title="Arsip Naskah"><i class="fa fa-archive"></i> Arsip</a>
                           </td>
                         </tr>
-                      <?php }
+                    <?php }
                     } ?>
                   </tbody>
                 </table>
               </div>
 
               <!-- PRINT AREA -->
-              <div class="container print" hidden="">
-                <h4 id="judul" class="mb-2"></h4>
+              <div class="container print" hidden="" style="font-size: 20px">
                 <div class="row">
-                  <div class="col-3">
-                    <span><b>Reporter:</b> <span id="reporter"></span></span><br>
-                    <span><b>Editor:</b> <span id="editor_berita"></span></span>
+                  <div class="col-md-2" style="width: 15%;">
+                    <img src="../assets/img/logo.png" alt="" height="100">
                   </div>
-                  <div class="col-4">
-                    <span><b>Tanggal Dibuat:</b> <span id="tanggal"></span></span><br>
-                    <span><b>Kategori:</b> <span id="kategori"></span></span>
+                  <div class="col-md-8" style="width: 70%;">
+                    <h4 id="judul" class="mb-3"></h4>
+                    <div class="row">
+                      <div class="col-6">
+                        <span><b>Reporter:</b> <span id="reporter"></span></span><br>
+                        <span><b>Desk Editor:</b> <span id="editor_berita"></span></span>
+                      </div>
+                      <div class="col-6">
+                        <span><b>Tanggal Dibuat:</b> <span id="tanggal"></span></span><br>
+                        <span><b>Kategori:</b> <span id="kategori"></span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-2" style="width: 15%;">
+                    <img src="../assets/img/uin.png" alt="" height="120">
                   </div>
                 </div>
                 <hr>
@@ -88,7 +98,7 @@ $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'")
   </section>
 </div>
 
-<?php foreach($revisi as $revs) { 
+<?php foreach ($revisi as $revs) {
   $berita_id = $revs['berita_id'];
   $berita = mysqli_query($conn, "SELECT * FROM tb_berita WHERE id = '$berita_id' AND status = 'verify'");
   $dtam = mysqli_fetch_assoc($berita);
@@ -96,7 +106,7 @@ $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'")
   if ($dtam) {
     $user_id = $dtam['user_id'];
     $reporter = mysqli_query($conn, "SELECT * FROM tb_users WHERE id = '$user_id'");
-    $usr = mysqli_fetch_assoc($reporter); ?>   
+    $usr = mysqli_fetch_assoc($reporter); ?>
 
     <!-- MODAL BERITA -->
     <div class="modal fade" tabindex="-1" role="dialog" id="modal-berita<?= $dtam['id'] ?>">
@@ -158,7 +168,7 @@ $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'")
         </div>
       </div>
     </div>
-  <?php } 
+<?php }
 } ?>
 <script>
   $(document).ready(function() {
@@ -167,6 +177,6 @@ $revisi = mysqli_query($conn, "SELECT * FROM tb_revisi WHERE editor_id = '$id'")
     $('#naskah_disetujui').addClass('active');
   });
 </script>
-<?php 
+<?php
 require('template/footer.php');
 ?>

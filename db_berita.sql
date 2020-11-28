@@ -31,12 +31,12 @@ SET time_zone = "+00:00";
 CREATE TABLE `tb_berita` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
-  `judul` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `judul` varchar(255) NOT NULL,
   `kategori` varchar(255) NOT NULL,
-  `berita_created` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `berita_final` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `berita_created` text NOT NULL,
+  `berita_final` text,
   `tanggal` datetime NOT NULL,
-  `konten` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `konten` varchar(255) DEFAULT NULL,
   `status` varchar(255) NOT NULL
 );
 
@@ -136,7 +136,7 @@ CREATE TABLE `tb_users` (
   `alamat` varchar(255) NOT NULL,
   `no_hp` varchar(255) NOT NULL,
   `jabatan` varchar(255) NOT NULL,
-  `foto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'default.png',
+  `foto` varchar(255) NOT NULL DEFAULT 'default.png',
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `status` varchar(255) NOT NULL DEFAULT 'waiting'

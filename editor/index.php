@@ -48,7 +48,7 @@ foreach ($revisi as $rev) {
       <div class="col-lg-3 col-md-6 col-sm-6 col-12">
         <div class="card card-statistic-1">
           <div class="card-icon bg-warning">
-            <i class="fas fa-columns"></i>
+            <i class="fas fa-undo"></i>
           </div>
           <div class="card-wrap">
             <div class="card-header">
